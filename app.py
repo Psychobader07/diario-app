@@ -142,10 +142,11 @@ cols[2].metric("Modalità", mode)
 st.markdown("---")
 
 # Pagina: Oggi -> mostra righe relative alla data odierna (se la colonna Data è data)
+# Pagina: Oggi -> mostra righe relative alla data odierna (se la colonna Data è data)
 try:
-df["Data_parsed"] = pd.to_datetime(df["Data"]).dt.date
+    df["Data_parsed"] = pd.to_datetime(df["Data"]).dt.date
 except Exception:
-df["Data_parsed"] = df["Data"]
+    df["Data_parsed"] = df["Data"]
 
 oggi_df = df[df["Data_parsed"] == today]
 if oggi_df.empty:
@@ -169,12 +170,11 @@ else:
                         sh = client.open_by_key(SHEET_ID)
                         ws = sh.sheet1
                         # find row index in sheet via searching for Data+Ora matching (simple heuristic)
-                        # ATTENZIONE: questo è un'implementazione semplice; potrebbe essere migliorata
                         all_values = ws.get_all_records()
                         for r_idx, rec in enumerate(all_values, start=2):
                             if str(rec.get('Data','')) == str(row['Data']) and str(rec.get('Ora','')) == str(row['Ora']):
                                 ws.update_cell(r_idx, list(df.columns).index("Stato")+1, new_state)
-                                st.success("Stato aggiornato su Google Sheet")
+                                st.success("✅ Stato aggiornato su Google Sheet")
                                 break
                         else:
                             st.warning("Non ho trovato la riga corrispondente per aggiornare.")
@@ -183,9 +183,6 @@ else:
                 else:
                     st.warning("Per salvare su Google Sheet attiva FULL_RW e carica il JSON service account nella sidebar.")
             cols[2].markdown(f"**Punteggio:** {row['Punteggio_calcolato'] or 0}")
-
-st.markdown("---")
-
 # Missioni: ricava da sheet le eventuali missioni (se esiste una tabella 'Missioni')
 # For simplicity: cerca foglio missioni via CSV non è semplice; qui visualizziamo una sezione sintetica.
 st.markdown("## 🎯 Missioni (sintesi)")
